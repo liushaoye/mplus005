@@ -87,18 +87,11 @@
                 <!-- 全局的表前缀策略配置 -->
                 <property name="tablePrefix" value="tbl_"/>
 
-                <!--逻辑删除全局配值-->
-                <property name="logicDeleteValue" value="0"/>
-                <property name="logicNotDeleteValue" value="1"/>
-
             </bean>
         </property>
 
         <!--&lt;!&ndash;注入自定义全局操作&ndash;&gt;-->
         <property name="sqlInjector" ref="mySqlInjector"/>
-
-        <!--<property name="sqlInjector" ref="logicSqlInjector"/>-->
-
 
     </bean>
 
