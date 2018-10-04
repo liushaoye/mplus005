@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!--全局驼峰命名方式开启-->
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+    
+    <plugins>
+        <plugin interceptor="com.baomidou.mybatisplus.extension.plugins.SqlExplainInterceptor">
+            <property name="stopProceed" value="false" />
+        </plugin>
+    </plugins>
+
+</configuration>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+       xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring
+    http://mybatis.org/schema/mybatis-spring-1.2.xsd
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+    <!-- 数据源 -->
+    <context:property-placeholder location="classpath:db.properties"/>
+
+    <bean id="dataSource"
+          class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${jdbc.driver}"/>
+        <property name="jdbcUrl" value="${jdbc.url}"/>
+        <property name="user" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <!-- 事务管理器 -->
+    <bean id="dataSourceTransactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- 基于注解的事务管理 -->
+    <tx:annotation-driven
+            transaction-manager="dataSourceTransactionManager"/>
+
+    <!--&lt;!&ndash;修改为MybatisPlus配置&ndash;&gt;-->
+    <bean id="sqlSessionFactoryBean" class=" com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean ">
+
+        <!-- 数据源 -->
+        <property name="dataSource" ref="dataSource"/>
+
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+
+        <!-- 别名处理 -->
+        <property name="typeAliasesPackage" value="com.baidu.www.bean"/>
+
+        <!--注入全局MP策略配置-->
+        <property name="globalConfig" ref="globalConfig"/>
+
+        <!--插件配置-->
+
+        <property name="plugins">
+            <list>
+
+                <!--注册分页插件-->
+                <bean class="com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor"/>
+
+                <!--注册执行分析插件,生产环境不建议使用-->
+                <!--<bean class="com.baomidou.mybatisplus.extension.plugins.SqlExplainInterceptor"/>-->
+                <!--&lt;!&ndash;<property name="properties" ref="">&ndash;&gt;-->
+
+                <!--&lt;!&ndash;</property>&ndash;&gt;-->
+                <!--</bean>-->
+
+                <!-- SQL 执行性能分析，开发环境使用，线上不推荐。 maxTime 指的是 sql 最大执行时长 -->
+                <bean class="com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor">
+                    <property name="maxTime" value="100"/>
+                    <!--SQL是否格式化 默认false-->
+                    <property name="format" value="true"/>
+                </bean>
+
+                <!--乐观锁插件-->
+                <bean class="com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor"/>
+
+            </list>
+        </property>
+
+    </bean>
+
+    <!--定义mybatisplus全局配置-->
+    <bean id="globalConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig">
+
+        <property name="dbConfig">
+            <bean class="com.baomidou.mybatisplus.core.config.GlobalConfig.DbConfig">
+                <!-- 全局的主键策略 -->
+                <property name="idType" value="AUTO"/>
+                <!-- 全局的表前缀策略配置 -->
+                <property name="tablePrefix" value="tbl_"/>
+
+                <!--逻辑删除全局配值-->
+                <property name="logicDeleteValue" value="0"/>
+                <property name="logicNotDeleteValue" value="1"/>
+
+            </bean>
+        </property>
+
+        <!--&lt;!&ndash;注入自定义全局操作&ndash;&gt;-->
+        <property name="sqlInjector" ref="mySqlInjector"/>
+
+        <!--<property name="sqlInjector" ref="logicSqlInjector"/>-->
+
+
+    </bean>
+
+
+    <!--自定义注入器-->
+
+    <bean id="mySqlInjector" class="com.baidu.www.injector.MyInjector"/>
+
+
+    <!--逻辑删除-->
+    <!--<bean id="logicSqlInjector" class="com.baomidou.mybatisplus.extension.injector.LogicSqlInjector"/>-->
+
+
+    <!--配置 mybatis 扫描 mapper 接口的路径 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage"
+                  value="com.baidu.www.mapper">
+
+        </property>
+    </bean>
+</beans>
+
